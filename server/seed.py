@@ -1,37 +1,16 @@
 #!/usr/bin/env python3
+from app import app, db, Customer
 
-import email
-from random import choice as rc, randint
-
-from faker import Faker
-
-from app import app
-from models import db, Customer
-
-
-fake = Faker()
-
-usernames = [fake.first_name() for i in range(4)]
-if "Duane" not in usernames:
-    usernames.append("Duane")
-
-def make_customers():
+with app.app_context():
+    print("Seeding database...")
 
     Customer.query.delete()
-    
-    customers = []
 
-    for i in range(3):
-        customer = Customer(
-            email=fake.email(),
-            age= randint(0, 125),
-            name=fake.name()
-        )
-        customers.append(customer)
+    c1 = Customer(name="Alice", email="alice@example.com", age=25)
+    c2 = Customer(name="Bob", email="bob@example.com", age=32)
+    c3 = Customer(name="Charlie", email="charlie@example.com", age=40)
 
-    db.session.add_all(customers)
-    db.session.commit()        
+    db.session.add_all([c1, c2, c3])
+    db.session.commit()
 
-if __name__ == '__main__':
-    with app.app_context():
-        make_customers()
+    print("Done seeding!")
